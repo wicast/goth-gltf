@@ -135,6 +135,7 @@ impl<E: Extensions> Gltf<E> {
 
 #[derive(Debug, DeJson)]
 pub struct Skin {
+    pub name: Option<String>,
     #[nserde(rename = "inverseBindMatrices")]
     pub inverse_bind_matrices: Option<usize>,
     pub skeleton: Option<usize>,
@@ -143,6 +144,7 @@ pub struct Skin {
 
 #[derive(Debug, DeJson)]
 pub struct Animation {
+    pub name: Option<String>,
     pub channels: Vec<Channel>,
     pub samplers: Vec<AnimationSampler>,
 }
@@ -197,6 +199,7 @@ pub enum TargetPath {
 
 #[derive(Debug, DeJson)]
 pub struct Buffer<E: Extensions> {
+    pub name: Option<String>,
     pub uri: Option<String>,
     #[nserde(rename = "byteLength")]
     pub byte_length: usize,
@@ -206,6 +209,7 @@ pub struct Buffer<E: Extensions> {
 
 #[derive(Debug, DeJson)]
 pub struct Node<E: Extensions> {
+    pub name: Option<String>,
     pub camera: Option<usize>,
     #[nserde(default)]
     pub children: Vec<usize>,
@@ -258,6 +262,7 @@ pub enum NodeTransform {
 
 #[derive(Debug, DeJson)]
 pub struct Mesh {
+    pub name: Option<String>,
     pub primitives: Vec<Primitive>,
     pub weights: Option<Vec<f32>>,
 }
@@ -334,6 +339,7 @@ pub struct Attributes {
 
 #[derive(Debug, DeJson, Clone)]
 pub struct Image {
+    pub name: Option<String>,
     pub uri: Option<String>,
     #[nserde(rename = "mimeType")]
     pub mime_type: Option<String>,
@@ -343,6 +349,7 @@ pub struct Image {
 
 #[derive(Debug, DeJson)]
 pub struct Texture<E: Extensions> {
+    pub name: Option<String>,
     pub sampler: Option<usize>,
     pub source: Option<usize>,
     #[nserde(default)]
@@ -351,6 +358,7 @@ pub struct Texture<E: Extensions> {
 
 #[derive(Debug, DeJson)]
 pub struct BufferView<E: Extensions> {
+    pub name: Option<String>,
     pub buffer: usize,
     #[nserde(rename = "byteOffset")]
     #[nserde(default)]
@@ -365,6 +373,7 @@ pub struct BufferView<E: Extensions> {
 
 #[derive(Debug, DeJson)]
 pub struct Accessor {
+    pub name: Option<String>,
     #[nserde(rename = "bufferView")]
     pub buffer_view: Option<usize>,
     #[nserde(rename = "byteOffset")]
@@ -496,6 +505,7 @@ impl AccessorType {
 
 #[derive(Debug, DeJson, Clone)]
 pub struct Material<E: Extensions> {
+    pub name: Option<String>,
     #[nserde(rename = "pbrMetallicRoughness")]
     #[nserde(default)]
     pub pbr_metallic_roughness: PbrMetallicRoughness<E>,
@@ -602,6 +612,7 @@ pub struct OcclusionTextureInfo<E: Extensions> {
 
 #[derive(Debug, DeJson)]
 pub struct Sampler {
+    pub name: Option<String>,
     #[nserde(rename = "magFilter")]
     pub mag_filter: Option<FilterMode>,
     #[nserde(rename = "minFilter")]
@@ -724,6 +735,7 @@ impl Default for SamplerWrap {
 
 #[derive(Debug, DeJson)]
 pub struct Camera {
+    pub name: Option<String>,
     pub perspective: Option<CameraPerspective>,
     pub orthographic: Option<CameraOrthographic>,
     #[nserde(rename = "type")]
@@ -757,6 +769,7 @@ pub enum CameraType {
 
 #[derive(Debug, DeJson, Clone)]
 pub struct Scene {
+    pub name: Option<String>,
     pub nodes: Vec<usize>,
 }
 
