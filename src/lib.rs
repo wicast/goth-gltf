@@ -610,7 +610,7 @@ pub struct OcclusionTextureInfo<E: Extensions> {
     pub extensions: E::TextureInfoExtensions,
 }
 
-#[derive(Debug, DeJson)]
+#[derive(Debug, DeJson, Clone)]
 pub struct Sampler {
     pub name: Option<String>,
     #[nserde(rename = "magFilter")]
@@ -625,10 +625,51 @@ pub struct Sampler {
     pub wrap_t: SamplerWrap,
 }
 
-#[derive(Debug)]
+#[cfg(feature = "wgpu_types")]
+impl From<Sampler> for wgpu::SamplerDescriptor<'static> {
+    fn from(val: Sampler) -> Self {
+        Self {
+            label: None,
+            address_mode_u: val.wrap_s.into(),
+            address_mode_v: val.wrap_t.into(),
+            address_mode_w: wgpu::AddressMode::default(),
+            mag_filter: val.mag_filter.unwrap_or_default().into(),
+            min_filter: val
+                .min_filter
+                .as_ref()
+                .map(|i| i.mode.clone())
+                .unwrap_or_default()
+                .into(),
+            mipmap_filter: val
+                .min_filter
+                .map(|i| i.mipmap.unwrap_or_default())
+                .unwrap_or_default()
+                .into(),
+            // lod_min_clamp: todo!(),
+            // lod_max_clamp: todo!(),
+            // compare: todo!(),
+            // anisotropy_clamp: todo!(),
+            // border_color: todo!(),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default)]
 pub enum FilterMode {
+    #[default]
     Nearest,
     Linear,
+}
+
+#[cfg(feature = "wgpu_types")]
+impl From<FilterMode> for wgpu::FilterMode {
+    fn from(value: FilterMode) -> Self {
+        match value {
+            FilterMode::Nearest => Self::Nearest,
+            FilterMode::Linear => Self::Linear,
+        }
+    }
 }
 
 impl DeJson for FilterMode {
@@ -651,7 +692,7 @@ impl DeJson for FilterMode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MinFilter {
     pub mode: FilterMode,
     pub mipmap: Option<FilterMode>,
@@ -699,11 +740,23 @@ impl DeJson for MinFilter {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Default)]
 pub enum SamplerWrap {
     ClampToEdge,
     MirroredRepeat,
+    #[default]
     Repeat,
+}
+
+#[cfg(feature = "wgpu_types")]
+impl From<SamplerWrap> for wgpu::AddressMode {
+    fn from(value: SamplerWrap) -> Self {
+        match value {
+            SamplerWrap::ClampToEdge => Self::ClampToEdge,
+            SamplerWrap::MirroredRepeat => Self::MirrorRepeat,
+            SamplerWrap::Repeat => Self::Repeat,
+        }
+    }
 }
 
 impl DeJson for SamplerWrap {
@@ -724,12 +777,6 @@ impl DeJson for SamplerWrap {
         state.next_tok(input)?;
 
         Ok(ty)
-    }
-}
-
-impl Default for SamplerWrap {
-    fn default() -> Self {
-        Self::Repeat
     }
 }
 
